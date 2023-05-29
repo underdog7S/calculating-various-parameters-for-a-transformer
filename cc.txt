@@ -1,0 +1,63 @@
+clear all
+close all
+
+% Input values
+PrimaryVtg = input('Enter primary voltage (V): ');
+SecondaryVtg = input('Enter secondary voltage (V): ');
+
+disp('Choose the copper density (g/mm^3):');
+disp('1. 2.3 ( copper)');
+disp('2. 8.96 (Pure copper)');
+disp('3. 8.89 (Annealed copper)');
+disp('4. 8.92 (Hard drawn copper)');
+choice = input('Enter your choice: ');
+
+switch choice
+    case 1
+        CuDensity = 2.3;
+    case 2
+        CuDensity = 8.96;
+    case 3
+        CuDensity = 8.89;
+    case 4
+        CuDensity = 8.92;
+    otherwise
+        error('Invalid choice');
+end
+
+% Calculate power using the formula: P = V * I
+PowerWatt = PrimaryVtg * SecondaryVtg / CuDensity;
+
+% Current
+Current = PowerWatt / PrimaryVtg; % Current in amperes
+
+% Cross-sectional area
+WireArea = Current / CuDensity; % Wire cross-sectional area in mm^2
+SWG = ceil(WireArea); % Approximation of wire gauge in mm^2
+
+disp(['Approx=', num2str(SWG), ' mm^2']);
+
+% Bmax is the maximum flux density
+Bmax = 1.6;
+
+% f is the frequency
+f = 50;
+
+% K is a winding factor
+K = 1.1;
+
+% Core cross-sectional area (Ac)
+Ac = (PrimaryVtg * Current * 10^4) / (Bmax * f * K);
+disp(['Core cross-sectional area: ', num2str(Ac)]);
+
+% Number of turns in the primary coil (N1)
+N1 = (PrimaryVtg * 10^8) / (4.44 * Bmax * f * Ac * K);
+disp(['Number of turns in the primary coil: ', num2str(N1)]);
+
+% Number of turns in the secondary coil (N2)
+N2 = (SecondaryVtg * N1) / PrimaryVtg;
+disp(['Number of turns in the secondary coil: ', num2str(N2)]);
+
+% For primary maximum flux density (Bmax)
+Bmax = (PrimaryVtg * 10^8) / (4.44 * N1 * f * Ac * K);
+disp(['Maximum flux density (Bmax): ', num2str(Bmax)]);
